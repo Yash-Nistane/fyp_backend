@@ -122,12 +122,9 @@ exports.getCampaignsFunded = async (req, res) => {
       if (error) return res.status(400).json({ error });
 
       if (user) {
-        console.log("_________________________");
+        
         let promiseArray = [];
         await getMyData(user, promiseArray);
-        //console.log(promiseArray[0]);
-        //console.log("hii12e", promiseArray);
-        //console.log("hihiasdhfisahdf");
         return res.status(200).json({ campaignsFunded: promiseArray });
       }
     });
@@ -136,12 +133,10 @@ exports.getCampaignsFunded = async (req, res) => {
 function getMyData(user, promiseArray) {
   return new Promise((rs, rj) => {
     user.campaignFunded.forEach((campaign) => {
-      //console.log(campaign.cid);
       Campaign.findOne({ _id: campaign.cid }).exec((error, data) => {
         if (error) return res.status(400).json({ error });
-        console.log("hii");
+        
         if (data) {
-          console.log(data);
           promiseArray.push(data);
         }
         rs();
@@ -149,3 +144,37 @@ function getMyData(user, promiseArray) {
     });
   });
 }
+
+
+exports.getCampaignsCreated = async (req, res) => {
+    user
+      .findOne({
+        username: req.body.username,
+      })
+      .exec(async (error, user) => {
+        if (error) return res.status(400).json({ error });
+  
+        if (user) {
+          
+          let promiseArray = [];
+          await getMyData1(user, promiseArray);
+          return res.status(200).json({ campaignsFunded: promiseArray });
+        }
+      });
+  };
+
+
+  function getMyData1(user, promiseArray) {
+    return new Promise((rs, rj) => {
+      user.campaignCreated.forEach((campaign) => {
+        Campaign.findOne({ _id: campaign.cid }).exec((error, data) => {
+          if (error) return res.status(400).json({ error });
+          
+          if (data) {
+            promiseArray.push(data);
+          }
+          rs();
+        });
+      });
+    });
+  }
