@@ -1,5 +1,6 @@
 const Campaign = require("../model/campaign");
 const user = require("../model/user");
+const mongoose = require('mongoose');
 
 exports.createCampaign = (req, res) => {
 
@@ -67,9 +68,12 @@ exports.fundCampaign = (req, res) => {
     console.log(req.body);
     const {
         username,
-        userId,
-        campaign_id
+        //userId,
+        //campaign_id
     } = req.body;
+
+    const userId = mongoose.mongo.ObjectId(req.body.userId);
+    const campaign_id = mongoose.mongo.ObjectId(req.body.campaign_id);
 
     user.findOneAndUpdate(
         {username},
@@ -89,10 +93,10 @@ exports.fundCampaign = (req, res) => {
                 {_id: campaign_id},
                 {
                     $push:{
-                        userId: userId
+                        fundedBy: {userId: userId}
                     }
                 },
-                
+                { new: true, upsert: true }
             ).exec((error, campaign) => {
                 return res.status(201).json({
                     campaign,
