@@ -108,3 +108,16 @@ exports.fundCampaign = (req, res) => {
 
     })    
 }
+
+exports.getAllCampaigns = (req, res) => {
+
+    console.log("getting all campaigns");
+    Campaign.find({}).exec((error, campaigns) => {
+
+        if (error) return res.status(400).json({ error });
+
+        if(campaigns){
+            return res.status(200).json({allCampaigns: campaigns});
+        }
+    })
+}
