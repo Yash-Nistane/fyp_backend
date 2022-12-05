@@ -21,7 +21,12 @@ const userSchema = new mongoose.Schema(
             {cid: {type: mongoose.Schema.Types.ObjectId, ref: 'Campaign'}}
         ], 
         campaignFunded: [
-            {cid: {type: mongoose.Schema.Types.ObjectId, ref: 'Campaign'}}
+            {
+                cid: {type: mongoose.Schema.Types.ObjectId, ref: 'Campaign'},
+                funded: {
+                    type: Number,
+                }
+            }
         ]
 
     }

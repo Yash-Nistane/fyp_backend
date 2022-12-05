@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
 const campaignRoutes = require('./routes/campaign');
@@ -19,6 +20,9 @@ async function connect() {
 connect();
 
 app.use(express.json());
+app.use(cors({
+    origin: '*'
+}));
 
 app.use('/api', authRoutes);
 app.use('/api', campaignRoutes);

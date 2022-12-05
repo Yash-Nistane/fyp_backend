@@ -14,6 +14,9 @@ exports.createCampaign = (req, res) => {
     minAmount,
     deadline,
     username,
+    fundsRaised,
+    currentMilestone,
+    currentAmount,
   } = req.body;
 
   const _campaign = new Campaign({
@@ -25,6 +28,9 @@ exports.createCampaign = (req, res) => {
     minAmount,
     deadline,
     createdBy: username,
+    fundsRaised,
+    currentMilestone,
+    currentAmount,
   });
 
   _campaign.save((error, campaign) => {
@@ -60,11 +66,13 @@ exports.createCampaign = (req, res) => {
 };
 
 exports.fundCampaign = (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   const {
     username,
     //userId,
-    //campaign_id
+    //campaign_id,
+    funded,
+    fundsRaised,
   } = req.body;
 
   const userId = mongoose.mongo.ObjectId(req.body.userId);
@@ -75,7 +83,12 @@ exports.fundCampaign = (req, res) => {
       { username },
       {
         $push: {
-          campaignFunded: { cid: campaign_id },
+          campaignFunded: {
+            cid: campaign_id,
+            $inc: {
+              fundsRaised: funded,
+            },
+          },
         },
       },
       { new: true, upsert: true }
@@ -90,6 +103,7 @@ exports.fundCampaign = (req, res) => {
             $push: {
               fundedBy: { userId: userId },
             },
+            fundsRaised,
           },
           { new: true, upsert: true }
         ).exec((error, campaign) => {
@@ -103,7 +117,8 @@ exports.fundCampaign = (req, res) => {
 };
 
 exports.getAllCampaigns = (req, res) => {
-  console.log("getting all campaigns");
+  //console.log("getting all campaigns");
+
   Campaign.find({}).exec((error, campaigns) => {
     if (error) return res.status(400).json({ error });
 
@@ -114,17 +129,18 @@ exports.getAllCampaigns = (req, res) => {
 };
 
 exports.getCampaignsFunded = async (req, res) => {
+  const username = req.body.username;
   user
     .findOne({
-      username: req.body.username,
+      username: username,
     })
     .exec(async (error, user) => {
       if (error) return res.status(400).json({ error });
 
       if (user) {
-        
         let promiseArray = [];
         await getMyData(user, promiseArray);
+        console.log(promiseArray);
         return res.status(200).json({ campaignsFunded: promiseArray });
       }
     });
@@ -135,7 +151,7 @@ function getMyData(user, promiseArray) {
     user.campaignFunded.forEach((campaign) => {
       Campaign.findOne({ _id: campaign.cid }).exec((error, data) => {
         if (error) return res.status(400).json({ error });
-        
+
         if (data) {
           promiseArray.push(data);
         }
@@ -145,49 +161,73 @@ function getMyData(user, promiseArray) {
   });
 }
 
-
 exports.getCampaignsCreated = async (req, res) => {
-    user
-      .findOne({
-        username: req.body.username,
-      })
-      .exec(async (error, user) => {
+  user
+    .findOne({
+      username: req.body.username,
+    })
+    .exec(async (error, user) => {
+      if (error) return res.status(400).json({ error });
+
+      if (user) {
+        let promiseArray = [];
+        await getMyData1(user, promiseArray);
+        return res.status(200).json({ campaignCreated: promiseArray });
+      } else {
+        return res.status(200).json({ campaignCreated: [] });
+      }
+    });
+  return res.status(404);
+};
+
+function getMyData1(user, promiseArray) {
+  return new Promise((rs, rj) => {
+    var x = 0;
+    user.campaignCreated.forEach((campaign) => {
+      Campaign.findOne({ _id: campaign.cid }).exec((error, data) => {
         if (error) return res.status(400).json({ error });
-  
-        if (user) {
-          
-          let promiseArray = [];
-          await getMyData1(user, promiseArray);
-          return res.status(200).json({ campaignsFunded: promiseArray });
+
+        if (data) {
+          promiseArray.push(data);
         }
-      });
-  };
-
-
-  function getMyData1(user, promiseArray) {
-    return new Promise((rs, rj) => {
-      user.campaignCreated.forEach((campaign) => {
-        Campaign.findOne({ _id: campaign.cid }).exec((error, data) => {
-          if (error) return res.status(400).json({ error });
-          
-          if (data) {
-            promiseArray.push(data);
-          }
-          rs();
-        });
+        x++;
       });
     });
-  }
+    const myinterval = setInterval(() => {
+      //console.log(x);
+      if (x == user.campaignCreated.length) {
+        rs();
+        clearInterval(myinterval);
+      }
+    }, 1000);
+  });
+}
 
-  exports.getCampaignById = (req, res) => {
+exports.getCampaignById = (req, res) => {
+  const id = mongoose.mongo.ObjectId(req.body.id);
+  Campaign.findOne({ _id: id }).exec((error, campaign) => {
+    if (error) return res.status(400).json({ error });
 
-    const id = mongoose.mongo.ObjectId(req.body.id)
-    Campaign.findOne({_id: id }).exec((error, campaign) => {
+    if (campaign) {
+      return res.status(200).json({ campaign: campaign });
+    }
+  });
+};
 
-        if (error) return res.status(400).json({ error });
-
-        if(campaign){
-            return res.status(200).json({campaign: campaign});
-        }
-    })
-  }
+exports.updateMilestone = (req, res) => {
+  const id = mongoose.mongo.ObjectId(req.body.id);
+  const decValue = req.body.decValue;
+  Campaign.findOneAndUpdate(
+    { _id: id },
+    {
+      $inc: {
+        currentMilestone: 1,
+        currentAmount: -decValue,
+      },
+    },
+    { new: true, upsert: true }
+  ).exec((error, campaign) => {
+    if (error) return res.status(404).json({ error });
+    else return res.status(201).json({ campaign });
+  });
+};
