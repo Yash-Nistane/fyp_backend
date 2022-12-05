@@ -26,11 +26,12 @@ const campaignSchema = new mongoose.Schema(
             }
         ],
         fundedBy:[
-            {id: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}}
+            {userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}}
         ],
-        createdBy: [
-            {id: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}}
-        ],
+        createdBy: {
+            type: String,
+            required: true
+        },
         promises: {
             type: String,
             //required: true,

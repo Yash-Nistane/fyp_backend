@@ -18,10 +18,10 @@ const userSchema = new mongoose.Schema(
             trim: true
         },
         campaignCreated: [
-            {id: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}}
+            {cid: {type: mongoose.Schema.Types.ObjectId, ref: 'Campaign'}}
         ], 
         campaignFunded: [
-            {id: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}}
+            {cid: {type: mongoose.Schema.Types.ObjectId, ref: 'Campaign'}}
         ]
 
     }
