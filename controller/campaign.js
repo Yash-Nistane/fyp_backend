@@ -178,3 +178,16 @@ exports.getCampaignsCreated = async (req, res) => {
       });
     });
   }
+
+  exports.getCampaignById = (req, res) => {
+
+    const id = mongoose.mongo.ObjectId(req.body.id)
+    Campaign.findOne({_id: id }).exec((error, campaign) => {
+
+        if (error) return res.status(400).json({ error });
+
+        if(campaign){
+            return res.status(200).json({campaign: campaign});
+        }
+    })
+  }

@@ -1,3 +1,4 @@
+const user = require("../model/user");
 const User = require("../model/user");
 
 exports.signup = (req, res) => {
@@ -37,3 +38,25 @@ exports.signup = (req, res) => {
     })
 }
 
+exports.signin = (req, res) => {
+
+    const {
+        username,
+        password
+    } = req.body;
+
+    user.findOne({username}).exec((error, user) => {
+
+        if(error){ return res.status(400).json({
+                error,
+            });
+        }
+
+        if(user){
+            return res.status(200).json({
+                username: user.username,
+                name: user.name
+            })
+        }
+    })
+}

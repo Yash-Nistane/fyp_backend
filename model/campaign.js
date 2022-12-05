@@ -22,6 +22,9 @@ const campaignSchema = new mongoose.Schema(
                 },
                 deadline: {
                     type: Date,
+                }, 
+                status: {
+                    type: String,
                 }
             }
         ],
