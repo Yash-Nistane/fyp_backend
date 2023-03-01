@@ -1,7 +1,13 @@
+import { Status } from '../constants/Status';
+
 const mongoose = require("mongoose");
 
 const campaignSchema = new mongoose.Schema({
-    name: {
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    title: {
         type: String,
         required: true,
         trim: true,
@@ -11,52 +17,58 @@ const campaignSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-    milestone: [
-        {
-            name: {
-                type: String,
-            },
-            fund: {
-                type: Number,
-            },
-            deadline: {
-                type: Date,
-            },
-            status: {
-                type: String,
-            },
-        },
-    ],
-    fundedBy: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" } }],
-    createdBy: {
+    imageURL: {
         type: String,
         required: true,
-    },
-    promises: {
-        type: String,
-        //required: true,
         trim: true,
     },
-    targetAmount: {
-        type: Number,
-        required: true,
-    },
-    minAmount: {
-        type: Number,
-        //required: true,
-    },
-    fundsRaised: {
-        type: Number,
-        required: true,
-    },
-    deadline: {
+    dateCreated: {
         type: Date,
+        default: Date.now
     },
-    currentMilestone: {
+    amountToRaise: {
         type: Number,
+        required: true
     },
-    currentAmount: {
+    deadlineToBid: {
+        type: Date,
+        required: true
+    },
+    deadlineOfProject: {
+        type: Date,
+        required: true
+    },
+    amountRaised: {
         type: Number,
+        default: 0
+    },
+    projectBuildersRequired: {
+        type: Boolean,
+        default: false
+    },
+    minAmountToRelease: {
+        type: Number,
+        default: 0
+    },
+    minAmountToFund: {
+        type: Number,
+        required: true
+    },
+    maxEquityToDilute: {
+        type: Number,
+        required: true
+    },
+    fundsReleased: {
+        type: Number,
+        default: 0
+    },
+    lastMilestoneCompleted: {
+        type: Number,
+        default: 0
+    },
+    status: {
+        type: Number,
+        default: Status.NOT_YET_STARTED
     }
 });
 
