@@ -2,12 +2,17 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
     {
-        name: { 
+        firstName: {
             type: String,
             required: true,
-            trim : true,
+            trim: true,
         },
-        username: {
+        lastName: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        email: {
             type: String,
             required: true,
             trim: true
@@ -17,17 +22,11 @@ const userSchema = new mongoose.Schema(
             required: true,
             trim: true
         },
-        campaignCreated: [
-            {cid: {type: mongoose.Schema.Types.ObjectId, ref: 'Campaign'}}
-        ], 
-        campaignFunded: [
-            {
-                cid: {type: mongoose.Schema.Types.ObjectId, ref: 'Campaign'},
-                funded: {
-                    type: Number,
-                }
-            }
-        ]
+        imageURL: {
+            type: String,
+            required: false,
+            trim: true,
+        },
 
     }
 )

@@ -4,15 +4,15 @@ const app = express();
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
-const campaignRoutes = require('./routes/campaign');
+// const campaignRoutes = require('./routes/campaign');
 
 const uri = "mongodb+srv://yash:yash@fypbackend.ebxo6pn.mongodb.net/?retryWrites=true&w=majority"
 
 async function connect() {
-    try{
+    try {
         await mongoose.connect(uri);
         console.log("Connected to mongoose");
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 }
@@ -25,7 +25,7 @@ app.use(cors({
 }));
 
 app.use('/api', authRoutes);
-app.use('/api', campaignRoutes);
+// app.use('/api', campaignRoutes);
 
 app.listen(8000, () => {
     console.log("Server started on port 8000");
