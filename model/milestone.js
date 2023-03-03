@@ -1,4 +1,4 @@
-import { Status } from '../constants/Status';
+import { Status } from '../config/Status';
 
 const mongoose = require("mongoose");
 

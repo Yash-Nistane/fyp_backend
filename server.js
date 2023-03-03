@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const cors = require('cors');
+const bodyparser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/auth');
 // const campaignRoutes = require('./routes/campaign');
@@ -23,6 +25,10 @@ app.use(express.json());
 app.use(cors({
     origin: '*'
 }));
+
+app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json());
+app.use(cookieParser());
 
 app.use('/api', authRoutes);
 // app.use('/api', campaignRoutes);

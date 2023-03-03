@@ -1,17 +1,16 @@
-// const user = require("../model/user");
 const User = require("../model/user");
 
 exports.signup = (req, res) => {
-    User.findOne({ email: req.body.email }).exec(async (err, user) => {
+    let { firstName, lastName, email, password, confirmPassword, imageURL } = req.body;
+    if (password != confirmPassword) {
+        return res.status(400).json({ message: "passwords do not match" });
+    }
+    User.findOne({ email: email }, function (err, user) {
         if (user) {
-            return res.status(400).json({
-                error: "User already registered",
-            });
+            return res.status(400).json({ auth: false, message: "user already exists" });
         }
 
-        const { firstName, lastName, email, password, imageURL } = req.body;
-
-        const _user = new User({
+        const newuser = new User({
             firstName,
             lastName,
             email,
@@ -19,53 +18,57 @@ exports.signup = (req, res) => {
             imageURL
         })
 
-        console.log(_user);
-        _user.save((error, user) => {
-
-            if (error) {
-                return res.status(400).json({
-                    error: error,
-                });
+        newuser.save((err, doc) => {
+            if (err) {
+                console.log(err);
+                return res.status(400).json({ success: false });
             }
-
-            if (user) {
-                return res.status(201).json({ message: "User successfully registered" });
-            }
-        })
-    })
+            res.status(200).json({
+                succes: true,
+                user: doc
+            });
+        });
+    });
 }
 
 // Sample data to test
 // {
 //     "firstName": "Shruti",
 //     "lastName": "Solani",
-//     "email":"xyzd@gmail.com",
+//     "email":"abc123@gmail.com",
 //     "password": "12345",
+//     "confirmPassword": "12345",
 //     "imageURL": "https://unsplash.com/photos/ZVprbBmT8QA"
 // }
 
-
 exports.signin = (req, res) => {
+    let token = req.cookies.auth;
+    User.findByToken(token, (err, user) => {
+        if (err) return res(err);
+        if (user) return res.status(400).json({
+            error: true,
+            message: "You are already logged in"
+        });
 
-    const {
-        email,
-        password
-    } = req.body;
+        else {
+            User.findOne({ 'email': req.body.email }, function (err, user) {
+                if (!user) return res.json({ isAuth: false, message: ' Auth failed ,email not found' });
 
-    User.findOne({ email: email }).exec((error, user) => {
-        if (user) {
-            //check if password matches
-            const result = password === user.password;
-            if (result) {
-                res.status(201).json({ message: "user signed in" });
-            } else {
-                res.status(400).json({ error: "password doesn't match" });
-            }
-        } else {
-            res.status(400).json({ error: "User doesn't exist" });
+                user.comparepassword(req.body.password, (err, isMatch) => {
+                    if (!isMatch) return res.json({ isAuth: false, message: "password doesn't match" });
+
+                    user.generateToken((err, user) => {
+                        if (err) return res.status(400).send(err);
+                        res.cookie('auth', user.token).json({
+                            isAuth: true,
+                            id: user._id,
+                            email: user.email
+                        });
+                    });
+                });
+            });
         }
     });
-
 }
 
 // Sample data to test 
@@ -73,3 +76,21 @@ exports.signin = (req, res) => {
 //     "email":"xyz@gmail.com",
 //     "password": "12345"
 // }
+
+
+exports.signout = (req, res) => {
+    req.user.deleteToken(req.token, (err, user) => {
+        if (err) return res.status(400).send(err);
+        res.sendStatus(200);
+    });
+}
+
+exports.viewProfile = (req, res) => {
+    res.json({
+        isAuth: true,
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.firstName + req.user.lastName,
+        profilePic: req.user.imageURL
+    })
+}

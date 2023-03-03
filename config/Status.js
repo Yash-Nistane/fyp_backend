@@ -1,4 +1,4 @@
-export default {
+exports.Status = {
     NOT_YET_STARTED: 0,
     WORK_IN_PROGRESS: 1,
     COMPLETED: 2,
