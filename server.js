@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/auth');
 const campaignRoutes = require('./routes/campaign');
+const milestoneRoutes = require('./routes/milestone');
 
 const uri = "mongodb+srv://yash:yash@fypbackend.ebxo6pn.mongodb.net/?retryWrites=true&w=majority"
 
@@ -32,6 +33,7 @@ app.use(cookieParser());
 
 app.use('/api', authRoutes);
 app.use('/api', campaignRoutes);
+app.use('/api', milestoneRoutes);
 
 app.listen(8000, () => {
     console.log("Server started on port 8000");
