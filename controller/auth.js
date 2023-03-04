@@ -21,11 +21,10 @@ exports.signup = (req, res) => {
         newuser.save((err, doc) => {
             if (err) {
                 console.log(err);
-                return res.status(400).json({ success: false });
+                return res.status(400).json({ message: err });
             }
             res.status(200).json({
-                succes: true,
-                user: doc
+                message: doc
             });
         });
     });

@@ -6,7 +6,7 @@ const bodyparser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/auth');
-// const campaignRoutes = require('./routes/campaign');
+const campaignRoutes = require('./routes/campaign');
 
 const uri = "mongodb+srv://yash:yash@fypbackend.ebxo6pn.mongodb.net/?retryWrites=true&w=majority"
 
@@ -31,7 +31,7 @@ app.use(bodyparser.json());
 app.use(cookieParser());
 
 app.use('/api', authRoutes);
-// app.use('/api', campaignRoutes);
+app.use('/api', campaignRoutes);
 
 app.listen(8000, () => {
     console.log("Server started on port 8000");

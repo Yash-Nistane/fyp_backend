@@ -1,4 +1,4 @@
-import { Status } from '../config/Status';
+const Status = require("../config/Status");
 
 const mongoose = require("mongoose");
 
@@ -68,7 +68,7 @@ const campaignSchema = new mongoose.Schema({
     },
     status: {
         type: Number,
-        default: Status.NOT_YET_STARTED
+        default: Status.Status.NOT_YET_STARTED
     }
 });
 

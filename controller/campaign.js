@@ -1,69 +1,80 @@
-// const Campaign = require("../model/campaign");
-// const user = require("../model/user");
-// const mongoose = require("mongoose");
+const Campaign = require("../model/campaign");
+const Status = require("../config/Status");
 
-// exports.createCampaign = (req, res) => {
-//   console.log(req.body);
+exports.postNewCampaign = (req, res) => {
+    const {
+        title,
+        description,
+        imageURL,
+        amountToRaise,
+        deadlineToBid,
+        deadlineOfProject,
+        projectBuildersRequired,
+        minAmountToRelease,
+        minAmountToFund,
+        maxEquityToDilute,
+    } = req.body;
 
-//   const {
-//     name,
-//     description,
-//     milestone,
-//     promises,
-//     targetAmount,
-//     minAmount,
-//     deadline,
-//     username,
-//     fundsRaised,
-//     currentMilestone,
-//     currentAmount,
-//   } = req.body;
+    const newcampaign = new Campaign({
+        userId: req.user._id,
+        title: title,
+        description: description,
+        imageURL: imageURL,
+        amountToRaise: amountToRaise,
+        deadlineToBid: deadlineToBid,
+        deadlineOfProject: deadlineOfProject,
+        projectBuildersRequired: projectBuildersRequired,
+        minAmountToRelease: minAmountToRelease,
+        minAmountToFund: minAmountToFund,
+        maxEquityToDilute: maxEquityToDilute,
+        status: Status.Status.NOT_YET_STARTED
+    })
 
-//   const _campaign = new Campaign({
-//     name,
-//     description,
-//     milestone,
-//     promises,
-//     targetAmount,
-//     minAmount,
-//     deadline,
-//     createdBy: username,
-//     fundsRaised,
-//     currentMilestone,
-//     currentAmount,
-//   });
+    newcampaign.save((err, doc) => {
+        if (err) {
+            console.log(err);
+            return res.status(400).json({ message: err });
+        }
+        res.status(200).json({
+            message: doc
+        });
+    });
+}
 
-//   _campaign.save((error, campaign) => {
-//     if (error) {
-//       return res.status(400).json({
-//         error: "something went wrong",
-//       });
-//     }
+// Sample data to test
+// {
+//     "title": "Hi-Tech Drone",
+//     "description": "Best Features: Foldable Drone, Wifi Camera, 720p Camera, 360° Flip, Headless Mode, Altitude Hold, One Key Take Off/ Landing.Camera - Yes, Flying Height - Upto 50 mtrs, Flying Time - 30 min, Weight - 0.410 Kgs.Camera - Yes, Flying Height - Upto 50 mtrs, Flying Time - 30 min, Weight - 0.410 Kgs.",
+//     "imageURL": "https://unsplash.com/photos/ptVBlniJi50",
+//     "amountToRaise": 65,
+//     "deadlineToBid": "2023-03-15T06:31:15.000+00:00",
+//     "deadlineOfProject": "2023-05-15T06:31:15.000+00:00", 
+//     "projectBuildersRequired": false,
+//     "minAmountToRelease": 20,
+//     "minAmountToFund": 10,
+//     "maxEquityToDilute": 8
+// }
 
-//     if (campaign) {
-//       user
-//         .findOneAndUpdate(
-//           { username: username },
-//           {
-//             $push: {
-//               campaignCreated: { cid: campaign._id },
-//             },
-//           },
-//           { new: true, upsert: true }
-//         )
-//         .exec((error, user) => {
-//           if (error) return res.status(400).json({ error });
+exports.getAllCampaigns = (req, res) => {
+    Campaign.find({}).sort({ dateCreated: -1 }).exec((error, campaigns) => {
+        if (error) return res.status(400).json({ message: error });
 
-//           if (user) {
-//             return res.status(201).json({
-//               campaign,
-//               user,
-//             });
-//           }
-//         });
-//     }
-//   });
-// };
+        if (campaigns) {
+            return res.status(200).json({ message: campaigns });
+        }
+    });
+};
+
+
+exports.getMyPostedCampaigns = (req, res) => {
+    Campaign.find({ userId: req.user._id }).sort({ dateCreated: -1 }).exec((err, campaigns) => {
+        if (err) return res.status(400).json({ message: err });
+
+        if (campaigns) {
+            return res.status(200).json({ message: campaigns });
+        }
+    })
+}
 
 // exports.fundCampaign = (req, res) => {
 //   //console.log(req.body);
@@ -116,17 +127,7 @@
 //     });
 // };
 
-// exports.getAllCampaigns = (req, res) => {
-//   //console.log("getting all campaigns");
 
-//   Campaign.find({}).exec((error, campaigns) => {
-//     if (error) return res.status(400).json({ error });
-
-//     if (campaigns) {
-//       return res.status(200).json({ allCampaigns: campaigns });
-//     }
-//   });
-// };
 
 // exports.getCampaignsFunded = async (req, res) => {
 //   const username = req.body.username;
