@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const bidSchema = new mongoose.Schema({
+const bidsSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

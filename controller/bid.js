@@ -1,5 +1,8 @@
 const Bid = require("../model/bid");
 
+
+
+// "campaignId": "6402dd0e2eb40a8565ac30b5"
 exports.bidOnCampaign = (req, res) => {
     const {
         campaignId,
@@ -24,3 +27,5 @@ exports.bidOnCampaign = (req, res) => {
         });
     });
 }
+
+// module.exports = { getBids }
