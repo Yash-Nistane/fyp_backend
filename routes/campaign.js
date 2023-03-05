@@ -1,20 +1,10 @@
 const express = require("express");
-const {
-  createCampaign,
-  fundCampaign,
-  getAllCampaigns,
-  getCampaignsFunded,
-  getCampaignsCreated,
-  getCampaignById,
-  updateMilestone,
-} = require("../controller/campaign");
 const router = express.Router();
+const { auth } = require("../middlewares/auth");
+const { postNewCampaign, getAllCampaigns, getMyPostedCampaigns } = require("../controller/campaign");
 
-router.post("/createCampaign", createCampaign);
-router.post("/fundCampaign", fundCampaign);
+router.post("/postNewCampaign", auth, postNewCampaign);
 router.get("/getAllCampaigns", getAllCampaigns);
-router.post("/getCampaignsFunded", getCampaignsFunded);
-router.post("/getCampaignsCreated", getCampaignsCreated);
-router.get("/getCampaignById", getCampaignById);
-router.post("/updateMilestone", updateMilestone);
+router.get("/getMyPostedCampaigns", auth, getMyPostedCampaigns);
+
 module.exports = router;

@@ -1,63 +1,75 @@
+const Status = require("../config/Status");
+
 const mongoose = require("mongoose");
 
 const campaignSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  description: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  milestone: [
-    {
-      name: {
-        type: String,
-      },
-      fund: {
-        type: Number,
-      },
-      deadline: {
-        type: Date,
-      },
-      status: {
-        type: String,
-      },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
-  ],
-  fundedBy: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" } }],
-  createdBy: {
-    type: String,
-    required: true,
-  },
-  promises: {
-    type: String,
-    //required: true,
-    trim: true,
-  },
-  targetAmount: {
-    type: Number,
-    required: true,
-  },
-  minAmount: {
-    type: Number,
-    //required: true,
-  },
-  fundsRaised: {
-    type: Number,
-    required: true,
-  },
-  deadline: {
-    type: Date,
-  },
-  currentMilestone: {
-    type: Number,
-  },
-  currentAmount: {
-    type: Number,
-  }
+    title: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    description: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    imageURL: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    dateCreated: {
+        type: Date,
+        default: Date.now
+    },
+    amountToRaise: {
+        type: Number,
+        required: true
+    },
+    deadlineToBid: {
+        type: Date,
+        required: true
+    },
+    deadlineOfProject: {
+        type: Date,
+        required: true
+    },
+    amountRaised: {
+        type: Number,
+        default: 0
+    },
+    projectBuildersRequired: {
+        type: Boolean,
+        default: false
+    },
+    minAmountToRelease: {
+        type: Number,
+        default: 0
+    },
+    minAmountToFund: {
+        type: Number,
+        required: true
+    },
+    maxEquityToDilute: {
+        type: Number,
+        required: true
+    },
+    fundsReleased: {
+        type: Number,
+        default: 0
+    },
+    lastMilestoneCompleted: {
+        type: Number,
+        default: 0
+    },
+    status: {
+        type: Number,
+        default: Status.Status.NOT_YET_STARTED
+    }
 });
 
 module.exports = mongoose.model("Campaign", campaignSchema);
