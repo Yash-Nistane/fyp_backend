@@ -19,13 +19,11 @@ exports.selectBids = async (req, res) => {
                 if (campaign) {
                     maxEquity = campaign.maxEquityToDilute;
                     var result = knapSack(maxEquity, equityInReturn, bidAmt, n);
-                    console.log(result);
                     var usersChosen = [];
                     for (i = 0; i <= result.length; i++) {
                         usersChosen.push(userIds[result[i]]);
                     }
                     res.status(200).json({ message: usersChosen });
-                    // res.json({ n: n, userIds: userIds, bidAmt: bidAmt, equityInReturn: equityInReturn, maxEquity: maxEquity });
                 }
             });
         }
@@ -37,14 +35,16 @@ function max(a, b) {
 }
 
 function knapSack(maxEquity, equityInReturn, bidAmt, n) {
-    equityInReturn[1] = 3;
-    console.log(maxEquity, equityInReturn, bidAmt, n);
+    // to make algo work for decimal values in equityInReturn array
+    // multiply equities by 10 to remove decimal value.
+    // ASSUMPTION : equity values are upto 1 decimal places;
+    equityInReturn = equityInReturn.map(function (x) { return x * 10; });
+    maxEquity = maxEquity * 10;
 
     let i, j;
     let K = new Array(n + 1);
-
     for (i = 0; i <= n; i++) {
-        K[i] = new Array(maxEquity + 1);
+        K[i] = new Array(n + 1);
         for (j = 0; j <= maxEquity; j++) {
             if (i == 0 || j == 0) {
                 K[i][j] = 0;
@@ -61,9 +61,8 @@ function knapSack(maxEquity, equityInReturn, bidAmt, n) {
         }
     }
 
-    console.log(K);
     var bidsAccepted = [];
-    i = n - 1, j = maxEquity;
+    i = n, j = maxEquity;
     while (i > 0 && j > 0) {
         if (K[i][j] == K[i - 1][j]) {
             i--;
