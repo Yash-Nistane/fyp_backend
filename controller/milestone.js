@@ -32,5 +32,31 @@ exports.createNewMilestone = (req, res) => {
 }
 
 exports.updateStatus = (req, res) => {
+    const {
+        milestoneNumber,
+        campaignId,
+        workingStatus,
+        fundStatus,
+        proofOfCompletion
+    } = req.body;
+
+    Milestone.findOne({ "campaignId": campaignId, "milestoneNumber": milestoneNumber }, function (err, milestone) {
+        if (err) return res.status(400).json({ message: "cannot find mileston" });
+
+        if (milestone) {
+            milestone.workingStatus = workingStatus;
+            milestone.fundStatus = fundStatus;
+            milestone.proofOfCompletion = proofOfCompletion;
+            milestone.dateOfCompletion = new Date();
+            milestone.save((err, doc) => {
+                if (err) {
+                    return res.status(400).json({ message: err });
+                }
+                res.status(200).json({
+                    message: doc
+                });
+            });
+        }
+    })
 
 }

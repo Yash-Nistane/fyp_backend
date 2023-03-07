@@ -1,8 +1,8 @@
 const express = require("express");
-const { createNewMilestone } = require("../controller/milestone");
-// const { auth } = require("../middlewares/auth");
+const { createNewMilestone, updateStatus } = require("../controller/milestone");
 const router = express.Router();
 
 router.post('/createNewMilestone', createNewMilestone);
+router.post('/updateStatus', updateStatus);
 
 module.exports = router;
