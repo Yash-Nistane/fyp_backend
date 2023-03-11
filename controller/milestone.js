@@ -1,4 +1,5 @@
 const Milestone = require("../model/milestone");
+const Campaign = require("../model/campaign");
 // const Status = require("../config/Status");
 
 exports.createNewMilestone = (req, res) => {
@@ -29,6 +30,22 @@ exports.createNewMilestone = (req, res) => {
             message: doc
         });
     });
+
+    Campaign.findOne({ "_id": campaignId }, function (err, campaign) {
+        if (err) return res.status(400).json({ message: "cannot find campaign" });
+
+        if (campaign) {
+            campaign.milestones.push(newMilestone._id);
+            campaign.save((err, doc) => {
+                if (err) {
+                    return res.status(400).json({ message: err });
+                }
+                res.status(200).json({
+                    message: doc
+                });
+            })
+        }
+    })
 }
 
 exports.updateStatus = (req, res) => {
@@ -41,7 +58,7 @@ exports.updateStatus = (req, res) => {
     } = req.body;
 
     Milestone.findOne({ "campaignId": campaignId, "milestoneNumber": milestoneNumber }, function (err, milestone) {
-        if (err) return res.status(400).json({ message: "cannot find mileston" });
+        if (err) return res.status(400).json({ message: "cannot find milestone" });
 
         if (milestone) {
             milestone.workingStatus = workingStatus;
