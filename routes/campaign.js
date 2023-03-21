@@ -8,7 +8,7 @@ const { selectBids } = require("../controller/auction");
 router.post("/postNewCampaign", auth, postNewCampaign);
 router.get("/getAllCampaigns", getAllCampaigns);
 router.get("/getMyPostedCampaigns", auth, getMyPostedCampaigns);
-router.get("/getCampaign", getCampaignByID);
+router.post("/getCampaign", getCampaignByID);
 router.get("/getMyFundedCampaigns", auth, getMyFundedCampaigns);
 router.post("/bidOnCampaign", auth, bidOnCampaign);
 router.post("/editBid", editBid);
