@@ -65,5 +65,17 @@ exports.updateStatus = (req, res) => {
             });
         }
     })
+}
 
+exports.getMilestoneByID = (req, res) => {
+    const { milestoneID } = req.body;
+    Milestone.findOne({ _id: milestoneID }, function (err, milestone) {
+        if (err) return res.status(400).json({ message: "cannot find milestone" });
+
+        if (milestone) {
+            return res.status(200).json({
+                message: milestone
+            });
+        }
+    })
 }
