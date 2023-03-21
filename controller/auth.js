@@ -85,11 +85,24 @@ exports.signout = (req, res) => {
 }
 
 exports.viewProfile = (req, res) => {
-    res.json({
-        isAuth: true,
-        id: req.user._id,
-        email: req.user.email,
-        name: req.user.firstName + req.user.lastName,
-        profilePic: req.user.imageURL
+    const { userId } = req.body;
+    User.findOne({ _id: userId }, function (err, user) {
+        if (err) return res.status(400).json({ message: err });
+
+        if (user) return res.status(200).json({
+            message: {
+                id: user._id,
+                email: user.email,
+                name: user.firstName + " " + user.lastName,
+                profilePic: user.imageURL
+            }
+        })
     })
+    // res.json({
+    //     isAuth: true,
+    //     id: req.user._id,
+    //     email: req.user.email,
+    //     name: req.user.firstName + req.user.lastName,
+    //     profilePic: req.user.imageURL
+    // })
 }

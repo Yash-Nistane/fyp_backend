@@ -1,8 +1,10 @@
 const Campaign = require("../model/campaign");
+const Milestone = require("../model/milestone");
 const Status = require("../config/Status");
 
 exports.postNewCampaign = (req, res) => {
     const {
+        userId,
         title,
         description,
         imageURL,
@@ -16,7 +18,7 @@ exports.postNewCampaign = (req, res) => {
     } = req.body;
 
     const newcampaign = new Campaign({
-        userId: req.user._id,
+        userId: userId,
         title: title,
         description: description,
         imageURL: imageURL,
@@ -67,7 +69,8 @@ exports.getAllCampaigns = (req, res) => {
 
 
 exports.getMyPostedCampaigns = (req, res) => {
-    Campaign.find({ userId: req.user._id }).sort({ dateCreated: -1 }).exec((err, campaigns) => {
+    const { userId } = req.body;
+    Campaign.find({ userId: userId }).sort({ dateCreated: -1 }).exec((err, campaigns) => {
         if (err) return res.status(400).json({ message: err });
 
         if (campaigns) {
@@ -77,175 +80,60 @@ exports.getMyPostedCampaigns = (req, res) => {
 }
 
 exports.getCampaignByID = (req, res) => {
-    console.log("Here");
     const { campaignID } = req.body;
-    console.log(campaignID);
-    Campaign.findOne({ _id: campaignID }, function (err, campaign) {
-        if (err) return res.status(400).json({ message: "cannot find campaign details" });
-
-        if (campaign) {
-            console.log("res");
-            return res.status(200).json({
-                message: campaign
-            });
-        }
+    Campaign.findOne({ _id: campaignID }).populate("milestones").then(campaign => {
+        return res.status(200).json({ message: campaign });
     })
+
+    // Campaign.findOne({ _id: campaignID }, function (err, campaign) {
+    //     if (err) return res.status(400).json({ message: "cannot find campaign details" });
+
+    //     if (campaign) {
+    //         User
+    //             .findOne({ _id: userId })
+    //             .populate("blogs") // key to populate
+    //             .then(user => {
+    //                 res.json(user);
+    //             });
+    //         // let milestoneDetails = [];
+    //         // campaign.milestones.forEach((milestone) => {
+    //         //     Milestone.findOne({ _id: milestone._id }, function (err, ms) {
+    //         //         if (err) return res.status(400).json({ message: "cannot find milestone details" });
+
+    //         //         if (ms) {
+    //         //             milestoneDetails.push(ms);
+    //         //         }
+    //         //     })
+    //         // })
+    //         // console.log(milestoneDetails);
+
+    //         return res.status(200).json({ message: campaign });
+    //     }
+    // })
+
 }
 
+    // Campaign.findOne({ _id: campaignID }, function (err, campaign) {
+    //     if (err) return res.status(400).json({ message: "cannot find campaign details" });
 
-// exports.fundCampaign = (req, res) => {
-//   //console.log(req.body);
-//   const {
-//     username,
-//     //userId,
-//     //campaign_id,
-//     funded,
-//     fundsRaised,
-//   } = req.body;
+//         if (campaign) {
+//             campaign.milestoneDetails = [];
+//             campaign.milestones.forEach((milestone) => {
+//                 Milestone.findOne({ _id: milestone._id }).exec((err, ms) => {
+//                     if (err) {
+//                         return { message: "cannot find milestone" };
+//                     }
 
-//   const userId = mongoose.mongo.ObjectId(req.body.userId);
-//   const campaign_id = mongoose.mongo.ObjectId(req.body.campaign_id);
+//                     if (ms) {
+//                         campaign.milestoneDetails.push(ms);
+//                     }
 
-//   user
-//     .findOneAndUpdate(
-//       { username },
-//       {
-//         $push: {
-//           campaignFunded: {
-//             cid: campaign_id,
-//             $inc: {
-//               fundsRaised: funded,
-//             },
-//           },
-//         },
-//       },
-//       { new: true, upsert: true }
-//     )
-//     .exec((error, user) => {
-//       if (error) return res.status(400).json({ error });
+//                 })
 
-//       if (user) {
-//         Campaign.findOneAndUpdate(
-//           { _id: campaign_id },
-//           {
-//             $push: {
-//               fundedBy: { userId: userId },
-//             },
-//             fundsRaised,
-//           },
-//           { new: true, upsert: true }
-//         ).exec((error, campaign) => {
-//           return res.status(201).json({
-//             campaign,
-//             user,
-//           });
-//         });
-//       }
-//     });
-// };
-
-
-
-// exports.getCampaignsFunded = async (req, res) => {
-//   const username = req.body.username;
-//   user
-//     .findOne({
-//       username: username,
-//     })
-//     .exec(async (error, user) => {
-//       if (error) return res.status(400).json({ error });
-
-//       if (user) {
-//         let promiseArray = [];
-//         await getMyData(user, promiseArray);
-//         console.log(promiseArray);
-//         return res.status(200).json({ campaignsFunded: promiseArray });
-//       }
-//     });
-// };
-
-// function getMyData(user, promiseArray) {
-//   return new Promise((rs, rj) => {
-//     user.campaignFunded.forEach((campaign) => {
-//       Campaign.findOne({ _id: campaign.cid }).exec((error, data) => {
-//         if (error) return res.status(400).json({ error });
-
-//         if (data) {
-//           promiseArray.push(data);
+//                 return res.status(200).json({
+//                     message: campaign
+//                 });
+//             })
 //         }
-//         rs();
-//       });
-//     });
-//   });
-// }
-
-// exports.getCampaignsCreated = async (req, res) => {
-//   user
-//     .findOne({
-//       username: req.body.username,
-//     })
-//     .exec(async (error, user) => {
-//       if (error) return res.status(400).json({ error });
-
-//       if (user) {
-//         let promiseArray = [];
-//         await getMyData1(user, promiseArray);
-//         return res.status(200).json({ campaignCreated: promiseArray });
-//       } else {
-//         return res.status(200).json({ campaignCreated: [] });
-//       }
-//     });
-//   return res.status(404);
-// };
-
-// function getMyData1(user, promiseArray) {
-//   return new Promise((rs, rj) => {
-//     var x = 0;
-//     user.campaignCreated.forEach((campaign) => {
-//       Campaign.findOne({ _id: campaign.cid }).exec((error, data) => {
-//         if (error) return res.status(400).json({ error });
-
-//         if (data) {
-//           promiseArray.push(data);
-//         }
-//         x++;
-//       });
-//     });
-//     const myinterval = setInterval(() => {
-//       //console.log(x);
-//       if (x == user.campaignCreated.length) {
-//         rs();
-//         clearInterval(myinterval);
-//       }
-//     }, 1000);
-//   });
-// }
-
-// exports.getCampaignById = (req, res) => {
-//   const id = mongoose.mongo.ObjectId(req.body.id);
-//   Campaign.findOne({ _id: id }).exec((error, campaign) => {
-//     if (error) return res.status(400).json({ error });
-
-//     if (campaign) {
-//       return res.status(200).json({ campaign: campaign });
 //     }
-//   });
-// };
-
-// exports.updateMilestone = (req, res) => {
-//   const id = mongoose.mongo.ObjectId(req.body.id);
-//   const decValue = req.body.decValue;
-//   Campaign.findOneAndUpdate(
-//     { _id: id },
-//     {
-//       $inc: {
-//         currentMilestone: 1,
-//         currentAmount: -decValue,
-//       },
-//     },
-//     { new: true, upsert: true }
-//   ).exec((error, campaign) => {
-//     if (error) return res.status(404).json({ error });
-//     else return res.status(201).json({ campaign });
-//   });
-// };
+// }

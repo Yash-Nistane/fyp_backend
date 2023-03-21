@@ -5,12 +5,12 @@ const { postNewCampaign, getAllCampaigns, getMyPostedCampaigns, getCampaignByID 
 const { bidOnCampaign, getMyFundedCampaigns, editBid } = require("../controller/bid");
 const { selectBids } = require("../controller/auction");
 
-router.post("/postNewCampaign", auth, postNewCampaign);
+router.post("/postNewCampaign", postNewCampaign);
 router.get("/getAllCampaigns", getAllCampaigns);
-router.get("/getMyPostedCampaigns", auth, getMyPostedCampaigns);
+router.get("/getMyPostedCampaigns", getMyPostedCampaigns);
 router.get("/getCampaign", getCampaignByID);
-router.get("/getMyFundedCampaigns", auth, getMyFundedCampaigns);
-router.post("/bidOnCampaign", auth, bidOnCampaign);
+router.get("/getMyFundedCampaigns", getMyFundedCampaigns);
+router.post("/bidOnCampaign", bidOnCampaign);
 router.post("/editBid", editBid);
 router.get("/auction", selectBids);
 
