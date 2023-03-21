@@ -38,7 +38,7 @@ const campaignSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    milestones: [{ milestoneId: { type: mongoose.Schema.Types.ObjectId, ref: "Milestone" } }],
+    milestones: [{ type: mongoose.Schema.Types.ObjectId, ref: "Milestone" }],
     amountRaised: {
         type: Number,
         default: 0

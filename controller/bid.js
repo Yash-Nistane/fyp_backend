@@ -3,13 +3,14 @@ const Bid = require("../model/bid");
 
 exports.bidOnCampaign = (req, res) => {
     const {
+        userId,
         campaignId,
         amountOffered,
         equityAsked
     } = req.body;
 
     const newBid = Bid({
-        "userId": req.user._id,
+        "userId": userId,
         "campaignId": campaignId,
         "amountOffered": amountOffered,
         "equityAsked": equityAsked
@@ -28,7 +29,8 @@ exports.bidOnCampaign = (req, res) => {
 
 
 exports.getMyFundedCampaigns = (req, res) => {
-    Bid.find({ userId: req.user._id }).sort({ dateOfBid: -1 }).exec((err, bids) => {
+    const { userId } = req.body;
+    Bid.find({ userId: userId }).sort({ dateOfBid: -1 }).exec((err, bids) => {
         if (err) return res.status(400).json({ message: "Could not find bids" });
 
         if (bids) {
