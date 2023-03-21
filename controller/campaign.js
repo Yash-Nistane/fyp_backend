@@ -76,6 +76,23 @@ exports.getMyPostedCampaigns = (req, res) => {
     })
 }
 
+exports.getCampaignByID = (req, res) => {
+    console.log("Here");
+    const { campaignID } = req.body;
+    console.log(campaignID);
+    Campaign.findOne({ _id: campaignID }, function (err, campaign) {
+        if (err) return res.status(400).json({ message: "cannot find campaign details" });
+
+        if (campaign) {
+            console.log("res");
+            return res.status(200).json({
+                message: campaign
+            });
+        }
+    })
+}
+
+
 // exports.fundCampaign = (req, res) => {
 //   //console.log(req.body);
 //   const {
