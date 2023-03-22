@@ -1,5 +1,7 @@
 const Milestone = require("../model/milestone");
 const Campaign = require("../model/campaign");
+const UserVote = require("../model/userVote");
+const Bid = require("../model/bid");
 
 exports.createNewMilestone = (req, res) => {
     const milestones = req.body;
@@ -78,4 +80,57 @@ exports.getMilestoneByID = (req, res) => {
             });
         }
     })
+}
+
+exports.voteMilestone = (req, res) => {
+    const {
+        userId,
+        milestoneId,
+        vote
+    } = req.body;
+
+    Milestone.findOne({ _id: milestoneId }, function (err, milestone) {
+        if (err) return res.status(400).json({ message: err });
+
+        if (milestone) {
+            Bid.findOne({ userId: userId, campaignId: milestone.campaignId }, function (err, bid) {
+                if (err) return res.status(400).json({ message: "You have not bid on this campaign" });
+            })
+
+            UserVote.findOne({ userId: userId, milestoneId: milestoneId }, function (err, voted) {
+                if (voted) {
+                    return res.status(400).json({ message: "You have already voted" });
+                }
+                else {
+                    const newVote = UserVote({
+                        userId: userId,
+                        milestoneId: milestoneId,
+                        vote: vote
+                    })
+
+                    newVote.save((err) => {
+                        if (err) {
+                            return res.status(400).json({ message: err });
+                        }
+                        else {
+                            if (vote == true) {
+                                milestone.approveVote = milestone.approveVote + 1;
+                            }
+                            else {
+                                milestone.disapproveVote = milestone.disapproveVote + 1;
+                            }
+                            milestone.save((err, doc) => {
+                                if (err) {
+                                    return res.status(400).json({ message: err });
+                                }
+                            });
+
+                            return res.status(200).json({ message: "Your vote is saved." });
+                        }
+                    });
+                }
+            })
+        }
+    })
+
 }
