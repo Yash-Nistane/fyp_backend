@@ -64,3 +64,23 @@ exports.editBid = (req, res) => {
         }
     })
 }
+
+exports.calcBidTotal = (req, res) => {
+    const { campaignId } = req.body;
+
+    Bid.aggregate([
+        {
+            $group:
+            {
+                _id: "$campaignId",
+                totalAmount: { $sum: "$amountOffered" }
+            }
+        }
+    ], function (err, data) {
+        if (err) return res.status(400).json({ message: err });
+
+        if (data) {
+            return res.status(200).json({ message: data });
+        }
+    })
+}

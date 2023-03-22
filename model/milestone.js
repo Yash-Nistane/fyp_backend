@@ -44,6 +44,14 @@ const milestoneSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+    approveVote: {
+        type: Number,
+        default: 0
+    },
+    disapproveVote: {
+        type: Number,
+        default: 0
+    }
 });
 
 module.exports = mongoose.model("Milestone", milestoneSchema);
