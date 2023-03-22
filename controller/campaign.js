@@ -67,7 +67,6 @@ exports.getAllCampaigns = (req, res) => {
     });
 };
 
-
 exports.getMyPostedCampaigns = (req, res) => {
     const { userId } = req.body;
     Campaign.find({ userId: userId }).sort({ dateCreated: -1 }).exec((err, campaigns) => {
