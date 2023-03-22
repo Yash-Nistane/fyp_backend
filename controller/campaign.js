@@ -1,5 +1,4 @@
 const Campaign = require("../model/campaign");
-const Milestone = require("../model/milestone");
 const Status = require("../config/Status");
 
 exports.postNewCampaign = (req, res) => {
@@ -83,56 +82,4 @@ exports.getCampaignByID = (req, res) => {
     Campaign.findOne({ _id: campaignID }).populate("milestones").then(campaign => {
         return res.status(200).json({ message: campaign });
     })
-
-    // Campaign.findOne({ _id: campaignID }, function (err, campaign) {
-    //     if (err) return res.status(400).json({ message: "cannot find campaign details" });
-
-    //     if (campaign) {
-    //         User
-    //             .findOne({ _id: userId })
-    //             .populate("blogs") // key to populate
-    //             .then(user => {
-    //                 res.json(user);
-    //             });
-    //         // let milestoneDetails = [];
-    //         // campaign.milestones.forEach((milestone) => {
-    //         //     Milestone.findOne({ _id: milestone._id }, function (err, ms) {
-    //         //         if (err) return res.status(400).json({ message: "cannot find milestone details" });
-
-    //         //         if (ms) {
-    //         //             milestoneDetails.push(ms);
-    //         //         }
-    //         //     })
-    //         // })
-    //         // console.log(milestoneDetails);
-
-    //         return res.status(200).json({ message: campaign });
-    //     }
-    // })
-
 }
-
-    // Campaign.findOne({ _id: campaignID }, function (err, campaign) {
-    //     if (err) return res.status(400).json({ message: "cannot find campaign details" });
-
-//         if (campaign) {
-//             campaign.milestoneDetails = [];
-//             campaign.milestones.forEach((milestone) => {
-//                 Milestone.findOne({ _id: milestone._id }).exec((err, ms) => {
-//                     if (err) {
-//                         return { message: "cannot find milestone" };
-//                     }
-
-//                     if (ms) {
-//                         campaign.milestoneDetails.push(ms);
-//                     }
-
-//                 })
-
-//                 return res.status(200).json({
-//                     message: campaign
-//                 });
-//             })
-//         }
-//     }
-// }
