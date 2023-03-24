@@ -41,6 +41,7 @@ exports.signup = (req, res) => {
 // }
 
 exports.signin = (req, res) => {
+    console.log(req.body);
     let token = req.cookies.auth;
     User.findByToken(token, (err, user) => {
         if (err) return res(err);
@@ -61,7 +62,10 @@ exports.signin = (req, res) => {
                         res.cookie('auth', user.token).json({
                             isAuth: true,
                             id: user._id,
-                            email: user.email
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            email: user.email,
+                            imageURL:user.imageURL
                         });
                     });
                 });

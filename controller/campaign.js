@@ -14,7 +14,9 @@ exports.postNewCampaign = (req, res) => {
         minAmountToRelease,
         minAmountToFund,
         maxEquityToDilute,
-    } = req.body;
+    } = req.body.payload;
+
+    console.log(req.body);
 
     const newcampaign = new Campaign({
         userId: userId,
