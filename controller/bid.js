@@ -30,13 +30,17 @@ exports.bidOnCampaign = (req, res) => {
 
 exports.getMyFundedCampaigns = (req, res) => {
     const { userId } = req.body;
-    Bid.find({ userId: userId }).sort({ dateOfBid: -1 }).exec((err, bids) => {
-        if (err) return res.status(400).json({ message: "Could not find bids" });
-
-        if (bids) {
-            return res.status(200).json({ message: bids });
-        }
+    Bid.find({ userId: userId }).populate("userId", "imageURL").populate({
+        path: 'campaignId',
+        populate: { path: 'milestones' }
     })
+        .sort({ dateOfBid: -1 }).exec((err, bids) => {
+            if (err) return res.status(400).json({ message: "Could not find bids" });
+
+            if (bids) {
+                return res.status(200).json({ message: bids });
+            }
+        })
 }
 
 exports.editBid = (req, res) => {

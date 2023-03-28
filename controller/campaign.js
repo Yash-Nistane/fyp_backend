@@ -16,8 +16,6 @@ exports.postNewCampaign = (req, res) => {
         maxEquityToDilute,
     } = req.body.payload;
 
-    console.log(req.body);
-
     const newcampaign = new Campaign({
         userId: userId,
         title: title,
