@@ -2,56 +2,12 @@ const Campaign = require("../model/campaign");
 const Milestone = require("../model/milestone");
 const Status = require("../config/Status");
 
-exports.postNewCampaign = (req, res) => {
-    const {
-        userId,
-        title,
-        description,
-        imageURL,
-        amountToRaise,
-        deadlineToBid,
-        deadlineOfProject,
-        projectBuildersRequired,
-        minAmountToRelease,
-        minAmountToFund,
-        maxEquityToDilute,
-    } = req.body.payload;
-
-    const newcampaign = new Campaign({
-        userId: userId,
-        title: title,
-        description: description,
-        imageURL: imageURL,
-        amountToRaise: amountToRaise,
-        deadlineToBid: deadlineToBid,
-        deadlineOfProject: deadlineOfProject,
-        projectBuildersRequired: projectBuildersRequired,
-        minAmountToRelease: minAmountToRelease,
-        minAmountToFund: minAmountToFund,
-        maxEquityToDilute: maxEquityToDilute,
-        status: Status.Status.NOT_YET_STARTED
-    })
-
-    newcampaign.save((err, doc) => {
-        if (err) {
-            console.log(err);
-            return res.status(400).json({ message: err });
-        }
-        res.status(200).json({
-            message: doc
-        });
-    });
-}
-
-
-
 // exports.postNewCampaign = (req, res) => {
 //     const {
 //         userId,
 //         title,
 //         description,
 //         imageURL,
-//         milestones,
 //         amountToRaise,
 //         deadlineToBid,
 //         deadlineOfProject,
@@ -60,8 +16,6 @@ exports.postNewCampaign = (req, res) => {
 //         minAmountToFund,
 //         maxEquityToDilute,
 //     } = req.body.payload;
-
-//     let newCampaignId;
 
 //     const newcampaign = new Campaign({
 //         userId: userId,
@@ -83,41 +37,87 @@ exports.postNewCampaign = (req, res) => {
 //             console.log(err);
 //             return res.status(400).json({ message: err });
 //         }
-
-//         if (doc) {
-//             milestones.forEach((milestone) => {
-//                 const newMilestone = Milestone({
-//                     milestoneNumber: milestone.id,
-//                     campaignId: doc._id,
-//                     title: milestone.title,
-//                     description: milestone.description,
-//                     fundsRequired: milestone.fundsRequired,
-//                     deadlineToComplete: milestone.deadlineToComplete
-//                 })
-
-//                 newMilestone.save((err, doc) => {
-//                     if (err) {
-//                         console.log(err);
-//                         return res.status(400).json({ message: err });
-//                     }
-//                 });
-
-//                 Campaign.findOne({ "_id": doc._id }, function (err, campaign) {
-//                     if (err) return res.status(400).json({ message: "cannot find campaign" });
-
-//                     if (campaign) {
-//                         campaign.milestones.push(newMilestone._id);
-//                         campaign.save((err, doc) => {
-//                             if (err) {
-//                                 return res.status(400).json({ message: err });
-//                             }
-//                         })
-//                     }
-//                 })
-//             })
-//         }
-//     })
+//         res.status(200).json({
+//             message: doc
+//         });
+//     });
 // }
+
+
+
+exports.postNewCampaign = (req, res) => {
+    const {
+        userId,
+        title,
+        description,
+        imageURL,
+        milestones,
+        amountToRaise,
+        deadlineToBid,
+        deadlineOfProject,
+        projectBuildersRequired,
+        minAmountToRelease,
+        minAmountToFund,
+        maxEquityToDilute,
+    } = req.body.payload;
+
+    let newCampaignId;
+
+    const newcampaign = new Campaign({
+        userId: userId,
+        title: title,
+        description: description,
+        imageURL: imageURL,
+        amountToRaise: amountToRaise,
+        deadlineToBid: deadlineToBid,
+        deadlineOfProject: deadlineOfProject,
+        projectBuildersRequired: projectBuildersRequired,
+        minAmountToRelease: minAmountToRelease,
+        minAmountToFund: minAmountToFund,
+        maxEquityToDilute: maxEquityToDilute,
+        status: Status.Status.NOT_YET_STARTED
+    })
+
+    newcampaign.save((err, doc) => {
+        if (err) {
+            console.log(err);
+            return res.status(400).json({ message: err });
+        }
+
+        if (doc) {
+            milestones.forEach((milestone) => {
+                const newMilestone = Milestone({
+                    milestoneNumber: milestone.id,
+                    campaignId: doc._id,
+                    title: milestone.title,
+                    description: milestone.description,
+                    fundsRequired: milestone.fundsRequired,
+                    deadlineToComplete: milestone.deadlineToComplete
+                })
+
+                newMilestone.save((err, doc) => {
+                    if (err) {
+                        console.log(err);
+                        return res.status(400).json({ message: err });
+                    }
+                });
+
+                Campaign.findOne({ "_id": doc._id }, function (err, campaign) {
+                    if (err) return res.status(400).json({ message: "cannot find campaign" });
+
+                    if (campaign) {
+                        campaign.milestones.push(newMilestone._id);
+                        campaign.save((err, doc) => {
+                            if (err) {
+                                return res.status(400).json({ message: err });
+                            }
+                        })
+                    }
+                })
+            })
+        }
+    })
+}
 
 
 // Sample data to test
