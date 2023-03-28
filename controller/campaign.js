@@ -59,6 +59,7 @@ exports.postNewCampaign = (req, res) => {
         minAmountToRelease,
         minAmountToFund,
         maxEquityToDilute,
+        address
     } = req.body.payload;
 
     let newCampaignId;
@@ -75,7 +76,8 @@ exports.postNewCampaign = (req, res) => {
         minAmountToRelease: minAmountToRelease,
         minAmountToFund: minAmountToFund,
         maxEquityToDilute: maxEquityToDilute,
-        status: Status.Status.NOT_YET_STARTED
+        status: Status.Status.NOT_YET_STARTED,
+        address
     })
 
     newcampaign.save((err, doc) => {
@@ -144,7 +146,7 @@ exports.getAllCampaigns = (req, res) => {
     // ])
     const { userId } = req.body;
 
-    Campaign.find({ userId: { $ne: userId } }).populate("userId", "imageURL").populate("milestones").sort({ dateCreated: -1 }).exec((error, campaigns) => {
+    Campaign.find({ userId: { $ne: userId } }).populate("userId").populate("milestones").sort({ dateCreated: -1 }).exec((error, campaigns) => {
         if (error) return res.status(400).json({ message: error });
 
         if (campaigns) {
@@ -155,7 +157,7 @@ exports.getAllCampaigns = (req, res) => {
 
 exports.getMyPostedCampaigns = (req, res) => {
     const { userId } = req.body;
-    Campaign.find({ userId: userId }).populate("userId", "imageURL").populate("milestones").sort({ dateCreated: -1 }).exec((err, campaigns) => {
+    Campaign.find({ userId: userId }).populate("userId").populate("milestones").sort({ dateCreated: -1 }).exec((err, campaigns) => {
         if (err) return res.status(400).json({ message: err });
 
         if (campaigns) {

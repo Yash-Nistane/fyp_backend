@@ -70,6 +70,12 @@ const campaignSchema = new mongoose.Schema({
     status: {
         type: Number,
         default: Status.Status.NOT_YET_STARTED
+    },
+    address : {
+        type: String,
+        required: true,
+        trim: true,
+
     }
 });
 
