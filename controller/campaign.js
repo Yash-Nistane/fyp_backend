@@ -59,9 +59,10 @@ exports.postNewCampaign = (req, res) => {
         minAmountToRelease,
         minAmountToFund,
         maxEquityToDilute,
-        address
+        contractAddress
     } = req.body.payload;
 
+    console.log(contractAddress);
     let newCampaignId;
 
     const newcampaign = new Campaign({
@@ -77,7 +78,7 @@ exports.postNewCampaign = (req, res) => {
         minAmountToFund: minAmountToFund,
         maxEquityToDilute: maxEquityToDilute,
         status: Status.Status.NOT_YET_STARTED,
-        address
+        contractAddress
     })
 
     newcampaign.save((err, doc) => {
