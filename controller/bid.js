@@ -9,21 +9,16 @@ exports.bidOnCampaign = (req, res) => {
         equityAsked
     } = req.body;
 
-    const newBid = Bid({
-        "userId": userId,
-        "campaignId": campaignId,
-        "amountOffered": amountOffered,
-        "equityAsked": equityAsked
-    })
+    Bid.updateOne(
+        { userId: userId, campaignId: campaignId },
+        { $set: { amountOffered: amountOffered, equityAsked: equityAsked } },
+        { upsert: true }
+    ).exec((err, bid) => {
+        if (err) return { message: "cannot save bid" };
 
-    newBid.save((err, doc) => {
-        if (err) {
-            console.log(err);
-            return res.status(400).json({ message: err });
+        if (bid) {
+            return res.status(200).json({ message: "Bid saved successfully" });
         }
-        res.status(200).json({
-            message: doc
-        });
     });
 }
 

@@ -12,7 +12,7 @@ router.post("/getCampaign", getCampaignByID);
 router.post("/getMyFundedCampaigns", getMyFundedCampaigns);
 router.post("/bidOnCampaign", bidOnCampaign);
 router.post("/editBid", editBid);
-router.get("/auction", selectBids);
+router.post("/getWinners", selectBids);
 router.post("/calcBidTotal", calcBidTotal);
 
 module.exports = router;
