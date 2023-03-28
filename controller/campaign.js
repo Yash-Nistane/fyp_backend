@@ -14,7 +14,9 @@ exports.postNewCampaign = (req, res) => {
         minAmountToRelease,
         minAmountToFund,
         maxEquityToDilute,
-    } = req.body;
+    } = req.body.payload;
+
+    console.log(req.body);
 
     const newcampaign = new Campaign({
         userId: userId,
@@ -79,7 +81,7 @@ exports.getMyPostedCampaigns = (req, res) => {
 
 exports.getCampaignByID = (req, res) => {
     const { campaignID } = req.body;
-    Campaign.findOne({ _id: campaignID }).populate("milestones").then(campaign => {
+    Campaign.findOne({ _id: campaignID }).populate("userId").populate("milestones").then(campaign => {
         return res.status(200).json({ message: campaign });
     })
 }
