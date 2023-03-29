@@ -73,9 +73,12 @@ const campaignSchema = new mongoose.Schema({
     },
     contractAddress : {
         type: String,
-        required: true,
         trim: true,
 
+    },
+    campaignAddress: {
+        type: String,
+        trim: true,
     }
 });
 

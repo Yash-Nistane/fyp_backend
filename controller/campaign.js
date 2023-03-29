@@ -173,3 +173,40 @@ exports.getCampaignByID = (req, res) => {
         return res.status(200).json({ message: campaign });
     })
 }
+
+exports.addCampaignAddress = (req, res) => {
+    const {
+        campaignId,
+        campaignAddress
+    } = req.body;
+
+    // Campaign.findOne({"_id": campaignId}, function(err, campaign){
+    //     if(err) return res.status(400).json({message: "sorry failed"});
+
+    //     if(campaign){
+    //         campaign.campaignAddress = campaignAddress;
+
+    //         campaign.save((err, doc) => {
+    //             if(err){
+    //                 return res.status(400).json({message: err});
+    //             }
+
+    //             res.status(200).json({
+    //                 message:doc
+    //             })
+    //         })
+    //     }
+    // });
+
+    Campaign.updateOne(
+        {_id: campaignId},
+        {$set: {campaignAddress: campaignAddress}},
+        {upsert: true}
+    ).exec((err, campaign) => {
+        if(err) return {message: "Something went wrong"};
+
+        if(campaign){
+            return res.status(200).json({message: campaign});
+        }
+    })
+}
