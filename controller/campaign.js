@@ -139,19 +139,17 @@ exports.postNewCampaign = (req, res) => {
 // }
 
 exports.getAllCampaigns = (req, res) => {
-    // Campaign.aggregate([
-    //     {
-    //         "$project": {
-    //             "userDetails": "$userId"
-    //         }
-    //     }
-    // ])
     const { userId } = req.body;
 
-    Campaign.find({ userId: { $ne: userId } }).populate("userId").populate("milestones").sort({ dateCreated: -1 }).exec((error, campaigns) => {
+    Campaign.find({ userId: { $ne: userId } }).populate("userId").populate("milestones").sort({ dateCreated: -1 }).lean().exec((error, campaigns) => {
         if (error) return res.status(400).json({ message: error });
 
         if (campaigns) {
+            var i;
+            for (i = 0; i < campaigns.length; i++) {
+                delete Object.assign(campaigns[i], { userDetails: campaigns[i].userId })['userId'];
+                delete Object.assign(campaigns[i], { milestoneDetails: campaigns[i].milestones })['milestones'];
+            }
             return res.status(200).json({ message: campaigns });
         }
     });
@@ -159,12 +157,16 @@ exports.getAllCampaigns = (req, res) => {
 
 exports.getMyPostedCampaigns = (req, res) => {
     const { userId } = req.body;
-    hasFunded = true;
-    Campaign.find({ userId: userId }).populate("userId").populate("milestones").sort({ dateCreated: -1 }).exec((err, campaigns) => {
+    Campaign.find({ userId: userId }).populate("userId").populate("milestones").sort({ dateCreated: -1 }).lean().exec((err, campaigns) => {
         if (err) return res.status(400).json({ message: err });
 
         if (campaigns) {
-            return res.status(200).json({ message: campaign });
+            var i;
+            for (i = 0; i < campaigns.length; i++) {
+                delete Object.assign(campaigns[i], { userDetails: campaigns[i].userId })['userId'];
+                delete Object.assign(campaigns[i], { milestoneDetails: campaigns[i].milestones })['milestones'];
+            }
+            return res.status(200).json({ message: campaigns });
         }
     })
 }
@@ -175,6 +177,8 @@ exports.getCampaignByID = (req, res) => {
         if (err) return res.status(400).json({ message: err });
 
         if (campaign) {
+            delete Object.assign(campaign, { userDetails: campaign.userId })['userId'];
+            delete Object.assign(campaign, { milestoneDetails: campaign.milestones })['milestones'];
             campaign["hasFunded"] = await Bid.find({ campaignId: campaignId, userId: userId }).count() > 0;
             return res.status(200).json({ message: campaign });
         }
