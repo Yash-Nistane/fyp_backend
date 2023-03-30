@@ -1,5 +1,6 @@
 const Campaign = require("../model/campaign");
 const Milestone = require("../model/milestone");
+const Bid = require("../model/bid");
 const Status = require("../config/Status");
 
 // exports.postNewCampaign = (req, res) => {
@@ -158,19 +159,25 @@ exports.getAllCampaigns = (req, res) => {
 
 exports.getMyPostedCampaigns = (req, res) => {
     const { userId } = req.body;
+    hasFunded = true;
     Campaign.find({ userId: userId }).populate("userId").populate("milestones").sort({ dateCreated: -1 }).exec((err, campaigns) => {
         if (err) return res.status(400).json({ message: err });
 
         if (campaigns) {
-            return res.status(200).json({ message: campaigns });
+            return res.status(200).json({ message: campaign });
         }
     })
 }
 
 exports.getCampaignByID = (req, res) => {
-    const { campaignID } = req.body;
-    Campaign.findOne({ _id: campaignID }).populate("userId").populate("milestones").then(campaign => {
-        return res.status(200).json({ message: campaign });
+    const { campaignId, userId } = req.body;
+    Campaign.findOne({ _id: campaignId }).populate("userId").populate("milestones").lean().exec(async (err, campaign) => {
+        if (err) return res.status(400).json({ message: err });
+
+        if (campaign) {
+            campaign["hasFunded"] = await Bid.find({ campaignId: campaignId, userId: userId }).count() > 0;
+            return res.status(200).json({ message: campaign });
+        }
     })
 }
 
@@ -199,14 +206,14 @@ exports.addCampaignAddress = (req, res) => {
     // });
 
     Campaign.updateOne(
-        {_id: campaignId},
-        {$set: {campaignAddress: campaignAddress}},
-        {upsert: true}
+        { _id: campaignId },
+        { $set: { campaignAddress: campaignAddress } },
+        { upsert: true }
     ).exec((err, campaign) => {
-        if(err) return {message: "Something went wrong"};
+        if (err) return { message: "Something went wrong" };
 
-        if(campaign){
-            return res.status(200).json({message: campaign});
+        if (campaign) {
+            return res.status(200).json({ message: campaign });
         }
     })
 }
