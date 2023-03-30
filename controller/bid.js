@@ -25,7 +25,7 @@ exports.bidOnCampaign = (req, res) => {
 
 exports.getMyFundedCampaigns = (req, res) => {
     const { userId } = req.body;
-    Bid.find({ userId: userId }).populate("userId", "imageURL").populate({
+    Bid.find({ userId: userId }).populate("userId").populate({
         path: 'campaignId',
         populate: { path: 'milestones' }
     })
