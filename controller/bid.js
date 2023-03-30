@@ -29,10 +29,16 @@ exports.getMyFundedCampaigns = (req, res) => {
         path: 'campaignId',
         populate: { path: 'milestones' }
     })
-        .sort({ dateOfBid: -1 }).exec((err, bids) => {
+        .sort({ dateOfBid: -1 }).lean().exec((err, bids) => {
             if (err) return res.status(400).json({ message: "Could not find bids" });
 
             if (bids) {
+                var i;
+                for (i = 0; i < bids.length; i++) {
+                    delete Object.assign(bids[i], { userDetails: bids[i].userId })['userId'];
+                    delete Object.assign(bids[i].campaignId, { milestoneDetails: bids[i].campaignId.milestones })['milestones'];
+                    delete Object.assign(bids[i], { campaignDetails: bids[i].campaignId })['campaignId'];
+                }
                 return res.status(200).json({ message: bids });
             }
         })
