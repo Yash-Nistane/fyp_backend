@@ -89,3 +89,17 @@ exports.calcBidTotal = (req, res) => {
         }
     })
 }
+
+// TODO: Need to test
+updateBidStatus = (campaignId, users) => {
+    Bid.updateMany(
+        { campaignId: { $eq: campaignId }, userId: { $in: users } },
+        { $set: { "selected": true } }
+    ).exec((err, bid) => {
+        if (err) return { message: "cannot update bid status" };
+
+        if (bid) {
+            return { message: "Bid status updated successfully" };
+        }
+    });
+}

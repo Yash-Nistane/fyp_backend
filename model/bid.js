@@ -20,6 +20,10 @@ const bidsSchema = new mongoose.Schema({
     dateOfBid: {
         type: Date,
         default: Date.now
+    },
+    selected: {
+        type: Boolean,
+        default: false
     }
 });
 
