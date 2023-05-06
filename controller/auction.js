@@ -1,14 +1,20 @@
 // const bidController = require("../controller/bid");
 const Bid = require("../model/bid");
 const Campain = require("../model/campaign");
+const User = require("../model/user");
 
 
 exports.selectBids = async (req, res) => {
     const { campaignId } = req.body;
+    console.log("campaignId = ", campaignId);
     Bid.find({ campaignId: campaignId }).exec((err, bids) => {
         if (err) return { message: "cannot find bids" };
         if (bids) {
+            console.log("bids = ", bids);
             const n = bids.length;
+            if (n == 0) {
+                return res.status(400).json({ message: "No bids found" });
+            }
             let userIds = bids.map(a => a.userId);
             let bidAmt = bids.map(a => a.amountOffered);
             let equityInReturn = bids.map(a => a.equityAsked);
@@ -19,11 +25,22 @@ exports.selectBids = async (req, res) => {
                 if (campaign) {
                     maxEquity = campaign.maxEquityToDilute;
                     var result = knapSack(maxEquity, equityInReturn, bidAmt, n);
+                    console.log("result = ", result);
+                    console.log("user ids = ", userIds);
                     var usersChosen = [];
                     for (i = 0; i <= result.length; i++) {
-                        usersChosen.push(userIds[result[i]]);
+                        if (result[i] == 1)
+                            usersChosen.push(userIds[result[i]]);
                     }
-                    res.status(200).json({ message: usersChosen });
+                    console.log(usersChosen);
+                    User.find({ _id: { $in: usersChosen } }, { "firstName": 1, "lastName": 1 }).exec((err, winners) => {
+                        if (err) return res.status(400).json({ message: err });
+
+                        if (winners) {
+                            res.status(200).json({ message: winners });
+                        }
+                    });
+
                 }
             });
         }
